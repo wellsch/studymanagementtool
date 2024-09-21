@@ -12,7 +12,9 @@ export const ClassContent: React.FC<ClassContentProps> = ({
 }) => {
   const [noteEntry, setNoteEntry] = useState("");
   const [notes, setNotes] = useState<string[]>([]);
-  const [studyPlan, setStudyPlan] = useState<string[]>([]);
+  const [studyPlan, setStudyPlan] = useState<
+    { title: string; agenda: string; time: number }[]
+  >([]);
   const [activeTab, setActiveTab] = useState("notes");
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export const ClassContent: React.FC<ClassContentProps> = ({
       .then((resp) => resp.json())
       .then((data) => {
         setNotes(data.notes.map((note: { content: string }) => note.content));
-        console.log(data);
+        setStudyPlan(data.study_plan);
       });
   }, [classId]);
 
@@ -48,7 +50,24 @@ export const ClassContent: React.FC<ClassContentProps> = ({
     [classId]
   );
 
-  const generateStudyPlan = useCallback(() => {}, []);
+  const generateStudyPlan = useCallback(() => {
+    const URI = encodeURI(
+      `${import.meta.env.VITE_API_URI}/study?class_id=${classId}`
+    );
+    fetch(URI, {
+      method: "POST",
+    }).then(() => {
+      const getURI = encodeURI(
+        `${import.meta.env.VITE_API_URI}/class?class_id=${classId}`
+      );
+      fetch(getURI)
+        .then((resp) => resp.json())
+        .then((data) => {
+          setNotes(data.notes.map((note: { content: string }) => note.content));
+          setStudyPlan(data.study_plan);
+        });
+    });
+  }, [classId]);
 
   return (
     <section className="content">
@@ -93,9 +112,15 @@ export const ClassContent: React.FC<ClassContentProps> = ({
         </section>
       ) : (
         <section className="plans">
-          <button onClick={() => generateStudyPlan()}>
+          <button className="generate" onClick={() => generateStudyPlan()}>
             (Re)Generate Study Plan
           </button>
+          {studyPlan.map((plan) => (
+            <section className="plan">
+              <h1 className="planTitle">{`${plan.title} - for ${plan.time} minutes.`}</h1>
+              <p className="agenda">{plan.agenda}</p>
+            </section>
+          ))}
         </section>
       )}
     </section>
