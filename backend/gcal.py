@@ -111,3 +111,22 @@ studyEvents =[
 ]
 
 print(integrate(existing, studyEvents, 9, 19))
+
+def create_event(service, start, end, title, agenda):
+
+    timezone = service.calendars().get(calendarId='primary').execute().get('timeZone')
+
+    event = {
+        'summary': title, 
+        'description': agenda,
+        'start': {
+            'dateTime': start,
+            'timeZone': timezone,
+        },
+        'end': {
+            'dateTime': end, 
+            'timeZone': timezone,
+        }
+    }
+    
+    event_result = service.events().insert(calendarId='primary', body=event).execute()
