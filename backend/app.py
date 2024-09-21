@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
-import datetime
+from datetime import datetime
 import google.auth
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -21,8 +21,6 @@ MONGODB_URI = os.environ['MONGODB_URI']
 CLIENT_ID = os.environ['CLIENT_ID']
 CLIENT_SECRET = os.environ['CLIENT_SECRET']
 client = MongoClient(MONGODB_URI)
-print(CLIENT_ID)
-print(CLIENT_SECRET)
 
 @app.route('/')
 def home():
@@ -122,35 +120,54 @@ def study():
 @app.route('/calendar', methods=['POST'])
 def calendar():
     token_str = request.json.get("token")
-    print(token_str)
+    start_date = request.json.get("start_date")
     creds = Credentials(token=token_str, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, token_uri="https://oauth2.googleapis.com/token",scopes=["https://www.googleapis.com/auth/calendar.readonly"])
     service = build('calendar', 'v3', credentials=creds)
-    events = get_upcoming_events(service)
+    events = get_upcoming_events(service, start_date)
     return jsonify(events), 200
 
-def get_upcoming_events(service, max_results=10):
-    print("WE IN")
+def get_upcoming_events(service, start_date, max_results=10):
     # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming {} events'.format(max_results))
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                           maxResults=max_results, singleEvents=True,
                                           orderBy='startTime').execute()
+    # print(events_result)
     events = events_result.get('items', [])
-    
     if not events:
         print('No upcoming events found.')
         return []
     
+    reference_date = datetime.strptime(start_date, "%Y-%m-%d")
     eventsInfo = []
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         end = event['end'].get('dateTime', event['end'].get('date'))
-        print(f"Event: {event['summary']} at {start}")
-        print(f"Event: {event['summary']} ends {end}")
-        eventInfo = {}
-        eventInfo["start"] = start
-        eventInfo["end"] = end
+        startDateTime = start.split("T")
+        endDateTime = end.split("T")
+        
+        startDate, startTime = startDateTime[0], startDateTime[1]
+        endDate, endTime = endDateTime[0], endDateTime[1]
+
+        # Convert the date strings to datetime objects
+        startDateObj = datetime.strptime(startDate, "%Y-%m-%d")
+        endDateObj = datetime.strptime(endDate, "%Y-%m-%d")
+        
+        startDaysAway = (startDateObj - reference_date).days
+        endDaysAway = (endDateObj - reference_date).days
+        
+        startTimeParsed = startTime.split(":")
+        endTimeParsed = endTime.split(":")
+        
+        eventInfo = {
+            "start_time": int(startTimeParsed[0]) + int(startTimeParsed[1]) / 60,
+            "end_time": int(endTimeParsed[0]) + int(endTimeParsed[1]) / 60,
+            "start_date":  startDaysAway,
+            "end_date": endDaysAway,
+        }
+        
+        eventsInfo.append(eventInfo)
         
     print(eventsInfo)
     return eventsInfo
