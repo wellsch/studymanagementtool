@@ -50,7 +50,6 @@ def integrate(existing, studyEvents, early, end):
             time = early
         
         # Fill up the current day that the event is on for studying
-        time = early
         result.extend(addEvents(time, event["start_time"], day, studyEvents))
         
         day = event["end_date"]
@@ -60,16 +59,30 @@ def integrate(existing, studyEvents, early, end):
 
 existing = [
     {
+        "end_date": 0,
+        "end_time": 10.0,
+        "start_date": 0,
+        "start_time": 9.0
+    },
+    {
+        "end_date": 0,
+        "end_time": 12.0,
+        "start_date": 0,
+        "start_time": 11.0
+    },
+    
+    {
+        "end_date": 1,
+        "end_time": 4.0,
+        "start_date": 0,
+        "start_time": 12.0
+    },
+    
+    {
         "end_date": 5,
         "end_time": 11.416666666666666,
         "start_date": 5,
         "start_time": 11.0
-    },
-    {
-        "end_date": 7,
-        "end_time": 13.0,
-        "start_date": 7,
-        "start_time": 12.0
     },
     {
         "end_date": 12,
