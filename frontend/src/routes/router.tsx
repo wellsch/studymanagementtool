@@ -6,14 +6,17 @@ import NotesHome from "../homePages/NotesHome"; // Your NotesHome component
 import StudyHome from "../homePages/StudyHome"; // Your StudyHome component
 import ScheduleHome from "../homePages/ScheduleHome"; // Your ScheduleHome component
 import Login from "./Login"; // Your Login component
+import { UserProvider } from "../contexts/UserProvider";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
+      <UserProvider>
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      </UserProvider>
     ),
     children: [
       { index: true, element: <Home /> },
