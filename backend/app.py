@@ -41,7 +41,7 @@ def login():
         })
         return jsonify({"user_id": str(result.inserted_id)}), 201
     else:
-        return jsonify({"user_id": str(exists["_id"])}), 201
+        return jsonify({"user_id": str(exists["_id"])}), 200
 
 @app.route('/class', methods=['POST', 'GET'])
 def class_():
@@ -100,21 +100,30 @@ def notes():
         if entry: return jsonify(entry['notes']), 200
         else: return jsonify({"error": "not found"}), 404
 
-@app.route('/study', methods=['GET'])
+@app.route('/study', methods=['GET', 'POST'])
 def study():
-    id = request.args.get('class_id')
-    entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
-    notes = [note["content"] for note in entry["notes"] if note["enabled"]]
-    name = entry["name"]
+    if request.method == 'POST':
+        id = request.args.get('class_id')
+        entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
+        notes = [note["content"] for note in entry["notes"] if note["enabled"]]
+        name = entry["name"]
 
-    study_plan = generate_study_plan(name, notes)
+        study_plan = generate_study_plan(name, notes)
+        result = client['studymanagementtool']['classes'].update_one(
+            {"_id": ObjectId(id)}, 
+            {"$set": {"study_plan": study_plan}}
+        )
 
-    client['studymanagementtool']['classes'].update_one(
-        {"_id": ObjectId(id)}, 
-        {"$set": {"study_plan": study_plan}}
-    )
+        if result.modified_count == 1: return jsonify({"status": "success"}), 200
+        else: return jsonify({"error": "study plan not added"}), 404
+    
+    if request.method == 'GET':
+        id = request.args.get('class_id')
+        entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
 
-    return jsonify(study_plan), 200
+        if entry: return jsonify(entry['study_plan']), 200
+        else: return jsonify({"error": "not found"}), 404
+
 
 @app.route('/calendar', methods=['POST'])
 def calendar():
