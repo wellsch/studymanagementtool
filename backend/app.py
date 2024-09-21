@@ -44,12 +44,12 @@ def login():
 @app.route('/class', methods=['POST', 'GET'])
 def class_():
     if request.method == 'POST':
-        name = request.json.get("name")
-        email = request.json.get("email")
-        priority = request.json.get("priority")
+        id = request.json.get("_id") # user id
+        name = request.json.get("name") # class name
+        priority = request.json.get("priority") # class priority
 
         result = client['studymanagementtool']['classes'].insert_one({
-            "email": email,
+            "user_id": id,
             "notes": [],
             "study_plan": [],
             "priority": priority,
@@ -57,7 +57,7 @@ def class_():
         })
 
         client['studymanagementtool']['users'].update_one(
-            {"email": email},
+            {"_id": ObjectId(id)},
             {"$push": {"class_ids": {"_id": str(result.inserted_id), "name": name}}}
         )
         
@@ -71,8 +71,8 @@ def class_():
 
 @app.route('/classes', methods=['GET'])
 def classes():
-    email = request.args.get('email')
-    entry = client['studymanagementtool']['users'].find_one({"email": email})
+    id = request.args.get('_id')
+    entry = client['studymanagementtool']['users'].find_one({"_id": ObjectId(id)})
     
     if entry: return jsonify(entry['class_ids']), 200
     else: return jsonify({"error": "not found"}), 404
