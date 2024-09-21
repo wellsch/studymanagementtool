@@ -10,15 +10,18 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from datetime import datetime
-from gpt import get_study_plan
+# from gpt import get_study_plan
 
 
 app = Flask(__name__)
 
 load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
+CLIENT_ID = os.environ['CLIENT_ID']
+CLIENT_SECRET = os.environ['CLIENT_SECRET']
 client = MongoClient(MONGODB_URI)
+print(CLIENT_ID)
+print(CLIENT_SECRET)
 
 @app.route('/')
 def home():
@@ -85,15 +88,17 @@ def study():
 
     return jsonify(study_plan), 200
 
-@app.route('/calendar', methods=['GET'])
+@app.route('/calendar', methods=['POST'])
 def calendar():
-    token = request.json.get("token")
-    creds = pickle.load(token)
+    token_str = request.json.get("token")
+    print(token_str)
+    creds = Credentials(token=token_str, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, token_uri="https://oauth2.googleapis.com/token",scopes=["https://www.googleapis.com/auth/calendar.readonly"])
     service = build('calendar', 'v3', credentials=creds)
     events = get_upcoming_events(service)
     return jsonify(events), 200
 
 def get_upcoming_events(service, max_results=10):
+    print("WE IN")
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming {} events'.format(max_results))
