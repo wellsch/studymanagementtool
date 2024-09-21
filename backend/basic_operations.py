@@ -1,5 +1,6 @@
 import datetime
 import os
+import bson
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -9,7 +10,10 @@ load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
 
 client = MongoClient(MONGODB_URI)
-db = client['sample_mflix']
-movies = db['movies']
+db = client['studymanagementtool']
+classes = db['classes']
+users = db['user']
 
-pprint(movies.find_one({'title': 'The Great Train Robbery'}))
+c140 = classes.find_one({'name': 'COMP 140'})
+
+pprint(c140)
