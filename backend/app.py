@@ -24,18 +24,22 @@ client = MongoClient(MONGODB_URI)
 def home():
     return "Hello, World!"
 
-@app.route('/account', methods=['POST'])
-def account():
+@app.route('/login', methods=['POST'])
+def login():
     name = request.json.get("name")
     email = request.json.get("email")
-    
-    result = client['studymanagementtool']['users'].insert_one({
-        "name": name,
-        "class_ids": [],
-        "email": email
-    })
 
-    return jsonify({"id": str(result.inserted_id)}), 201
+    exists = client['studymanagementtool']['users'].find_one({"email": email})
+    
+    if not exists:
+        result = client['studymanagementtool']['users'].insert_one({
+            "name": name,
+            "class_ids": [],
+            "email": email
+        })
+        return jsonify({"_id": str(result.inserted_id)}), 201
+    else:
+        return jsonify({"_id": str(exists.inserted_id)}), 201
 
 @app.route('/class', methods=['POST', 'GET'])
 def class_():
@@ -57,11 +61,13 @@ def class_():
             {"$push": {"class_ids": {"_id": str(result.inserted_id), "name": name}}}
         )
         
-        return jsonify({"id": str(result.inserted_id)}), 201
+        return jsonify({"_id": str(result.inserted_id)}), 201
 
     else:
-        id = request.json.get("id")
-        return jsonify(client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})), 200
+        id = request.json.get("_id")
+        entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
+        entry["_id"] = str(entry["_id"])
+        return jsonify(entry), 200
 
 @app.route('/classes', methods=['GET'])
 def classes():
@@ -74,7 +80,7 @@ def classes():
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
     if request.method == 'POST':
-        id = request.json.get("id")
+        id = request.json.get("_id")
         notes = request.json.get("notes")
 
         result = client['studymanagementtool']['classes'].update_one(
@@ -86,7 +92,7 @@ def notes():
         else: return jsonify({"error": "notes not inserted"}), 404
 
     else:
-        id = request.json.get("id")
+        id = request.json.get("_id")
         entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
 
         if entry: return jsonify(entry['notes']), 200
@@ -95,7 +101,7 @@ def notes():
 @app.route('/study', methods=['GET'])
 def study():
 
-    id = request.json.get("id")
+    id = request.json.get("_id")
     entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
     notes = [note["content"] for note in entry["notes"] if note["enabled"]]
     name = entry["name"]
