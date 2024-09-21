@@ -1,0 +1,23 @@
+/* Home Section Styles */
+.home {
+  background-color: #f9f9f9; /* Light background color */
+  padding: 2rem; /* Spacing around the content */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  max-width: 800px; /* Maximum width for better readability */
+  margin: 2rem auto; /* Center the section horizontally */
+  text-align: center; /* Center text */
+}
+
+h1 {
+  font-size: 2.5rem; /* Larger font size for the heading */
+  color: #333; /* Darker text color */
+  margin-bottom: 1rem; /* Space below the heading */
+}
+
+p {
+  font-size: 1.125rem; /* Slightly larger font for readability */
+  line-height: 1.6; /* Line height for better text spacing */
+  color: #555; /* Softer text color */
+  margin-top: 0; /* Remove default margin */
+}

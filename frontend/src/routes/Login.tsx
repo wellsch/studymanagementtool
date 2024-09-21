@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import "./login.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -29,9 +30,8 @@ export default function Login() {
   }, [navigate]);
 
   return (
-    <main>
-      <section>
-        <h1>Log in with Google</h1>
+      <section className="login">
+        <h1>Study Buddy</h1>
         <div className="btn-container">
           <button className="btn btn-primary" onClick={handleClick}>
             <svg
@@ -66,6 +66,5 @@ export default function Login() {
           </button>
         </div>
       </section>
-    </main>
   );
 }

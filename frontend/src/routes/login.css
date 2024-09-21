@@ -1,0 +1,55 @@
+/* Login Styles */
+body {
+    background-color: #f0f2f5; /* Light background for contrast */
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 2.5rem; /* Larger heading */
+    color: #333; /* Darker text for visibility */
+    margin-bottom: 2rem; /* Space below the heading */
+  }
+  
+  .btn-container {
+    margin-top: 1rem;
+  }
+  
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4285f4; /* Google blue */
+    color: white; /* White text color */
+    padding: 0.75rem 1.5rem; /* Padding for the button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 1rem; /* Font size for the button */
+    font-weight: bold; /* Bold text */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  }
+  
+  .btn:hover {
+    background-color: #357ae8; /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+  }
+  
+  .btn svg {
+    margin-right: 0.5rem; /* Space between icon and text */
+    fill: white; /* Icon color */
+  }
+  
+  .btn:focus {
+    outline: none; /* Remove default outline */
+  }
