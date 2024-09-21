@@ -1,6 +1,6 @@
 import pickle
 from flask import Flask, request, jsonify
-from dotenv import load_dontenv
+from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
@@ -15,7 +15,7 @@ from gpt import get_study_plan
 
 app = Flask(__name__)
 
-load_dontenv()
+load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
 client = MongoClient(MONGODB_URI)
 
