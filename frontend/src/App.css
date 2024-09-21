@@ -13,3 +13,10 @@ main {
   align-items: center;
   justify-content: center;
 }
+
+.home {
+  margin: 100px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}

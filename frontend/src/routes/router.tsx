@@ -1,11 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute"; // Assuming this is the path to your ProtectedRoute component
-import Layout from "./Layout"; // Your Layout component
-import Home from "./Home"; // Your Home component
-import NotesHome from "../homePages/NotesHome"; // Your NotesHome component
-import StudyHome from "../homePages/StudyHome"; // Your StudyHome component
-import ScheduleHome from "../homePages/ScheduleHome"; // Your ScheduleHome component
-import Login from "./Login"; // Your Login component
+import ProtectedRoute from "./ProtectedRoute";
+import Layout from "./Layout";
+import Home from "./Home";
+import { Classes } from "../homePages/Classes";
+import Schedule from "../homePages/Schedule";
+import Login from "./Login";
 import { UserProvider } from "../contexts/UserProvider";
 
 const router = createBrowserRouter([
@@ -20,9 +19,8 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Home /> },
-      { path: "notes", element: <NotesHome /> },
-      { path: "study", element: <StudyHome /> },
-      { path: "schedule", element: <ScheduleHome /> },
+      { path: "notes", element: <Classes /> },
+      { path: "schedule", element: <Schedule /> },
     ],
   },
   {

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 
-const ScheduleHome: React.FC = () => {
+const Schedule: React.FC = () => {
   const [className, setClassName] = useState("");
 
   const requestSchedule = useCallback(async (className: string) => {
@@ -41,4 +41,4 @@ const ScheduleHome: React.FC = () => {
   );
 };
 
-export default ScheduleHome;
+export default Schedule;

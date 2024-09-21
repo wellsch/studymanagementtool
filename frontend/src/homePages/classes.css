@@ -84,10 +84,3 @@ button.add:disabled {
 button.add:hover:not(:disabled) {
   background-color: #135ba1;
 }
-
-.notes {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-}
