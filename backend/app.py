@@ -39,7 +39,7 @@ def login():
         })
         return jsonify({"_id": str(result.inserted_id)}), 201
     else:
-        return jsonify({"_id": str(exists.inserted_id)}), 201
+        return jsonify({"_id": str(exists["_id"])}), 201
 
 @app.route('/class', methods=['POST', 'GET'])
 def class_():

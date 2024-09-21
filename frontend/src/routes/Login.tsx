@@ -18,7 +18,6 @@ export default function Login() {
     const isMatch = window.location.href.match(accessTokenRegex);
 
     if (isMatch) {
-      console.log("here");
       const accessToken = isMatch[1];
       sessionStorage.setItem("token", accessToken);
       navigate("/");
@@ -26,8 +25,8 @@ export default function Login() {
   }, [navigate]);
 
   return (
-    <div className="root">
-      <div>
+    <main>
+      <section>
         <h1>Log in with Google</h1>
         <div className="btn-container">
           <button className="btn btn-primary" onClick={handleClick}>
@@ -62,7 +61,7 @@ export default function Login() {
             Log in with Google
           </button>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

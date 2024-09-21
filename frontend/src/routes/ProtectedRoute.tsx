@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
-  const { setEmail, setUsername } = useContext(UserContext);
+  const { setEmail, setUsername, setId } = useContext(UserContext);
 
   const getUserDetails = useCallback(
     async (accessToken: string | undefined) => {
@@ -19,8 +19,20 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
       console.log(data);
       setUsername(data.name);
       setEmail(data.email);
+      const URI = `${import.meta.env.VITE_API_URI}/login`;
+      const idData = await fetch(URI, {
+        method: "POST",
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }).then((resp) => resp.json());
+      setId(idData._id);
     },
-    [setEmail, setUsername]
+    [setEmail, setId, setUsername]
   );
 
   useEffect(() => {
