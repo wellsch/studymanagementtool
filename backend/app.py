@@ -1,8 +1,15 @@
+import pickle
 from flask import Flask, request, jsonify
 from dotenv import load_dontenv
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
+import datetime
+import google.auth
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
 from datetime import datetime
 from gpt import get_study_plan
 
@@ -80,7 +87,37 @@ def study():
 
 @app.route('/calendar', methods=['GET'])
 def calendar():
-    pass
+    token = request.json.get("token")
+    creds = pickle.load(token)
+    service = build('calendar', 'v3', credentials=creds)
+    events = get_upcoming_events(service)
+    return jsonify(events), 200
+
+def get_upcoming_events(service, max_results=10):
+    # Call the Calendar API
+    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    print('Getting the upcoming {} events'.format(max_results))
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                          maxResults=max_results, singleEvents=True,
+                                          orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    
+    if not events:
+        print('No upcoming events found.')
+        return []
+    
+    eventsInfo = []
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        end = event['end'].get('dateTime', event['end'].get('date'))
+        print(f"Event: {event['summary']} at {start}")
+        print(f"Event: {event['summary']} ends {end}")
+        eventInfo = {}
+        eventInfo["start"] = start
+        eventInfo["end"] = end
+        
+    print(eventsInfo)
+    return eventsInfo
 
 if __name__ == '__main__':
     app.run(debug=True)
