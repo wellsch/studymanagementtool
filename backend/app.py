@@ -10,8 +10,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from gpt import get_study_plan
-
+# from gpt import get_study_plan
 
 app = Flask(__name__)
 
@@ -36,26 +35,31 @@ def account():
 
     return jsonify({"id": str(result.inserted_id)}), 201
 
-@app.route('/class', methods=['POST'])
+@app.route('/class', methods=['POST', 'GET'])
 def class_():
-    name = request.json.get("name")
-    email = request.json.get("email")
-    priority = request.json.get("priority")
+    if request.method == 'POST':
+        name = request.json.get("name")
+        email = request.json.get("email")
+        priority = request.json.get("priority")
 
-    result = client['studymanagementtool']['classes'].insert_one({
-        "email": email,
-        "notes": [],
-        "study_plan": [],
-        "priority": priority,
-        "name": name
-    })
+        result = client['studymanagementtool']['classes'].insert_one({
+            "email": email,
+            "notes": [],
+            "study_plan": [],
+            "priority": priority,
+            "name": name
+        })
 
-    client['studymanagementtool']['users'].update_one(
-        {"email": email},
-        {"$push": {"class_ids": {"_id": str(result.inserted_id), "name": name}}}
-    )
-    
-    return jsonify({"id": str(result.inserted_id)}), 201
+        client['studymanagementtool']['users'].update_one(
+            {"email": email},
+            {"$push": {"class_ids": {"_id": str(result.inserted_id), "name": name}}}
+        )
+        
+        return jsonify({"id": str(result.inserted_id)}), 201
+
+    else:
+        id = request.json.get("id")
+        return jsonify(client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})), 200
 
 @app.route('/classes', methods=['GET'])
 def classes():
