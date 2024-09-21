@@ -141,7 +141,7 @@ def get_upcoming_events(service, start_date, max_results=10):
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                           maxResults=max_results, singleEvents=True,
                                           orderBy='startTime').execute()
-    # print(events_result)
+    print(events_result)
     events = events_result.get('items', [])
     if not events:
         print('No upcoming events found.')
