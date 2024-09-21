@@ -1,5 +1,6 @@
 import pickle
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
@@ -12,8 +13,8 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 # from gpt import get_study_plan
 
-
 app = Flask(__name__)
+CORS(app)
 
 load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
@@ -27,45 +28,75 @@ print(CLIENT_SECRET)
 def home():
     return "Hello, World!"
 
-@app.route('/account', methods=['POST'])
-def account():
-    pass
-
-@app.route('/class', methods=['POST'])
-def create_class():
-
+@app.route('/login', methods=['POST'])
+def login():
     name = request.json.get("name")
-    user_id = request.json.get("user_id")
-    priority = request.json.get("priority")
+    email = request.json.get("email")
 
-    result = client['studymanagementtool']['classes'].insert_one({
-        "user_id": user_id,
-        "notes": [],
-        "study_plan": [],
-        "priority": priority,
-        "name": name
-    })
+    exists = client['studymanagementtool']['users'].find_one({"email": email})
     
-    return jsonify({"id": str(result.inserted_id)}), 201
+    if not exists:
+        result = client['studymanagementtool']['users'].insert_one({
+            "name": name,
+            "class_ids": [],
+            "email": email
+        })
+        return jsonify({"_id": str(result.inserted_id)}), 201
+    else:
+        return jsonify({"_id": str(exists["_id"])}), 201
+
+@app.route('/class', methods=['POST', 'GET'])
+def class_():
+    if request.method == 'POST':
+        name = request.json.get("name")
+        email = request.json.get("email")
+        priority = request.json.get("priority")
+
+        result = client['studymanagementtool']['classes'].insert_one({
+            "email": email,
+            "notes": [],
+            "study_plan": [],
+            "priority": priority,
+            "name": name
+        })
+
+        client['studymanagementtool']['users'].update_one(
+            {"email": email},
+            {"$push": {"class_ids": {"_id": str(result.inserted_id), "name": name}}}
+        )
+        
+        return jsonify({"_id": str(result.inserted_id)}), 201
+
+    else:
+        id = request.json.get("_id")
+        entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
+        entry["_id"] = str(entry["_id"])
+        return jsonify(entry), 200
+
+@app.route('/classes', methods=['GET'])
+def classes():
+    email = request.json.get("email")
+    entry = client['studymanagementtool']['users'].find_one({"email": email})
+    
+    if entry: return jsonify(entry['class_ids']), 200
+    else: return jsonify({"error": "not found"}), 404
 
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
-
     if request.method == 'POST':
-
-        id = request.json.get("id")
+        id = request.json.get("_id")
         notes = request.json.get("notes")
 
         result = client['studymanagementtool']['classes'].update_one(
             {"_id": ObjectId(id)}, 
-            {"$push": {"notes": {"date": str(datetime.now()), "content": notes, "enabled": True}}}
+            {"$push": {"notes": {"date": str(datetime.datetime.now()), "content": notes, "enabled": True}}}
         )
 
         if result.modified_count == 1: return jsonify({"status": "success"}), 200
         else: return jsonify({"error": "notes not inserted"}), 404
 
     else:
-        id = request.json.get("id")
+        id = request.json.get("_id")
         entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
 
         if entry: return jsonify(entry['notes']), 200
@@ -74,7 +105,7 @@ def notes():
 @app.route('/study', methods=['GET'])
 def study():
 
-    id = request.json.get("id")
+    id = request.json.get("_id")
     entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
     notes = [note["content"] for note in entry["notes"] if note["enabled"]]
     name = entry["name"]
