@@ -1,6 +1,6 @@
 .navbar {
   width: 100%;
-  background-color: orange;
+  background-color: #1976d2;
   height: 70px;
   display: flex;
   justify-content: space-around;
@@ -11,4 +11,7 @@
   width: 200px;
   height: 50px;
   text-align: center;
+  font-family: "Arial", sans-serif;
+  font-size: 1.5rem;
+  color: #e3f2fd;
 }

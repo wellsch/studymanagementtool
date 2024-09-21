@@ -30,7 +30,8 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
           "Content-type": "application/json; charset=UTF-8",
         },
       }).then((resp) => resp.json());
-      setId(idData._id);
+      console.log(idData);
+      setId(idData.user_id);
     },
     [setEmail, setId, setUsername]
   );

@@ -6,16 +6,20 @@ export default function Login() {
 
   const handleClick = () => {
     const callbackUrl = `${window.location.origin}/login`;
+    const calendarScope = "https://www.googleapis.com/auth/calendar";
     const googleClientId = import.meta.env.VITE_GOOGLE_ID;
     const targetUrl = `https://accounts.google.com/o/oauth2/auth?redirect_uri=${encodeURIComponent(
       callbackUrl
-    )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile`;
+    )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile%20${encodeURIComponent(
+      calendarScope
+    )}`;
     window.location.href = targetUrl;
   };
 
   useEffect(() => {
     const accessTokenRegex = /access_token=([^&]+)/;
     const isMatch = window.location.href.match(accessTokenRegex);
+    console.log(window.location.href);
 
     if (isMatch) {
       const accessToken = isMatch[1];

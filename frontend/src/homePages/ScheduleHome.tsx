@@ -8,7 +8,15 @@ const ScheduleHome: React.FC = () => {
       import.meta.env.VITE_API_URI
     }/calendar?class=${className}&token=${sessionStorage.getItem("token")}`;
     console.log(URI);
-    const data = await fetch(URI).then((resp) => resp.json());
+    const data = await fetch(URI, {
+      method: "POST",
+      body: JSON.stringify({
+        token: sessionStorage.getItem("token"),
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    }).then((resp) => resp.json());
     console.log(data);
   }, []);
 

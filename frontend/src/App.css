@@ -3,6 +3,10 @@ body {
   width: 100%;
 }
 
+main {
+  display: flex;
+}
+
 :root {
   display: flex;
   flex-direction: row;
