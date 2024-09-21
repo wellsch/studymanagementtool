@@ -11,7 +11,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-# from gpt import get_study_plan
+from gpt import generate_study_plan
 
 app = Flask(__name__)
 CORS(app)
@@ -39,7 +39,7 @@ def login():
         })
         return jsonify({"_id": str(result.inserted_id)}), 201
     else:
-        return jsonify({"_id": str(exists.inserted_id)}), 201
+        return jsonify({"_id": str(exists["_id"])}), 201
 
 @app.route('/class', methods=['POST', 'GET'])
 def class_():
@@ -64,14 +64,14 @@ def class_():
         return jsonify({"_id": str(result.inserted_id)}), 201
 
     else:
-        id = request.json.get("_id")
+        id = request.args.get('_id')
         entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
         entry["_id"] = str(entry["_id"])
         return jsonify(entry), 200
 
 @app.route('/classes', methods=['GET'])
 def classes():
-    email = request.json.get("email")
+    email = request.args.get('email')
     entry = client['studymanagementtool']['users'].find_one({"email": email})
     
     if entry: return jsonify(entry['class_ids']), 200
@@ -92,7 +92,7 @@ def notes():
         else: return jsonify({"error": "notes not inserted"}), 404
 
     else:
-        id = request.json.get("_id")
+        id = request.args.get('_id')
         entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
 
         if entry: return jsonify(entry['notes']), 200
@@ -100,13 +100,12 @@ def notes():
 
 @app.route('/study', methods=['GET'])
 def study():
-
-    id = request.json.get("_id")
+    id = request.args.get('_id')
     entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
     notes = [note["content"] for note in entry["notes"] if note["enabled"]]
     name = entry["name"]
 
-    study_plan = get_study_plan(name, notes)
+    study_plan = generate_study_plan(name, notes)
 
     client['studymanagementtool']['classes'].update_one(
         {"_id": ObjectId(id)}, 
