@@ -10,7 +10,6 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from datetime import datetime
 from gpt import get_study_plan
 
 
@@ -26,36 +25,55 @@ def home():
 
 @app.route('/account', methods=['POST'])
 def account():
-    pass
+    name = request.json.get("name")
+    email = request.json.get("email")
+    
+    result = client['studymanagementtool']['users'].insert_one({
+        "name": name,
+        "class_ids": [],
+        "email": email
+    })
+
+    return jsonify({"id": str(result.inserted_id)}), 201
 
 @app.route('/class', methods=['POST'])
-def create_class():
-
+def class_():
     name = request.json.get("name")
-    user_id = request.json.get("user_id")
+    email = request.json.get("email")
     priority = request.json.get("priority")
 
     result = client['studymanagementtool']['classes'].insert_one({
-        "user_id": user_id,
+        "email": email,
         "notes": [],
         "study_plan": [],
         "priority": priority,
         "name": name
     })
+
+    client['studymanagementtool']['users'].update_one(
+        {"email": email},
+        {"$push": {"class_ids": {"_id": str(result.inserted_id), "name": name}}}
+    )
     
     return jsonify({"id": str(result.inserted_id)}), 201
 
+@app.route('/classes', methods=['GET'])
+def classes():
+    email = request.json.get("email")
+    entry = client['studymanagementtool']['users'].find_one({"email": email})
+    
+    if entry: return jsonify(entry['class_ids']), 200
+    else: return jsonify({"error": "not found"}), 404
+
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
-
     if request.method == 'POST':
-
         id = request.json.get("id")
         notes = request.json.get("notes")
 
         result = client['studymanagementtool']['classes'].update_one(
             {"_id": ObjectId(id)}, 
-            {"$push": {"notes": {"date": str(datetime.now()), "content": notes, "enabled": True}}}
+            {"$push": {"notes": {"date": str(datetime.datetime.now()), "content": notes, "enabled": True}}}
         )
 
         if result.modified_count == 1: return jsonify({"status": "success"}), 200
