@@ -1,5 +1,6 @@
 import pickle
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
@@ -13,6 +14,7 @@ from googleapiclient.discovery import build
 # from gpt import get_study_plan
 
 app = Flask(__name__)
+CORS(app)
 
 load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
