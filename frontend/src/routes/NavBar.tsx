@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const NavBar = () => {
   return (
     <Box
-      width="100%"
+      width="1400px"
       bg="orange"
       height="70px"
       display="flex"
