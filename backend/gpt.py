@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import json
 
+# TJ's FAVORITE T SWIZ SONG: BLANK SPACE
 
 load_dotenv()
 client = OpenAI(
