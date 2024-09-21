@@ -8,7 +8,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
-  width: 100%;
+  width: 90%;
   box-sizing: border-box;
   padding: 20px;
   max-height: 90vh;
@@ -109,7 +109,7 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.generate {
+/* .generate {
   background-color: #4caf50;
   color: white;
   padding: 10px 20px;
@@ -120,7 +120,7 @@
   transition: background-color 0.3s;
   margin-bottom: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .generate:hover {
   background-color: #45a049;
@@ -169,4 +169,39 @@
   .agenda {
     font-size: 14px;
   }
+}
+
+.generate-container {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center the items */
+  margin-bottom: 20px; /* Space below the container */
+}
+
+.generate {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px; /* Space between button and spinner */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1); /* Light gray border */
+  border-top: 4px solid #4caf50; /* Green top border */
+  border-radius: 50%; /* Make it circular */
+  width: 20px; /* Width of the spinner */
+  height: 20px; /* Height of the spinner */
+  animation: spin 1s linear infinite; /* Spin animation */
+}
+
+/* Spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
