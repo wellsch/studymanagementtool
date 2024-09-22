@@ -73,5 +73,5 @@ def get_response(prompt):
             "content": prompt
         }
     ]
-    )
+    )     # Louis's favorite Taylor Swift song is Sparks Fly
     return completion.choices[0].message.content

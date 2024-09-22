@@ -45,7 +45,33 @@ export const ClassContent: React.FC<ClassContentProps> = ({
       })
         .then((resp) => resp.json())
         .then((data) => {
-          if (!data.error) setNotes((prev) => [...prev, notesContent]);
+          if (!data.error) setNotes((prev) => [notesContent, ...prev]);
+        });
+    },
+    [classId]
+  );
+
+  const deleteNote = useCallback(
+    (index: number) => {
+      const URI = encodeURI(`${import.meta.env.VITE_API_URI}/notes`);
+      fetch(URI, {
+        method: "DELETE",
+        body: JSON.stringify({
+          class_id: classId,
+          index: index,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          console.log(data);
+          if (!data.error)
+            setNotes((prev) => [
+              ...prev.slice(0, index),
+              ...prev.slice(index + 1),
+            ]);
         });
     },
     [classId]
@@ -58,19 +84,23 @@ export const ClassContent: React.FC<ClassContentProps> = ({
     );
     fetch(URI, {
       method: "POST",
-    }).then(() => {
-      const getURI = encodeURI(
-        `${import.meta.env.VITE_API_URI}/class?class_id=${classId}`
-      );
-      fetch(getURI)
-        .then((resp) => resp.json())
-        .then((data) => {
-          setNotes(data.notes.map((note: { content: string }) => note.content));
-          setStudyPlan(data.study_plan);
-        });
-    }).finally(() => {
-      setLoading(false); // Stop loading
-    });
+    })
+      .then(() => {
+        const getURI = encodeURI(
+          `${import.meta.env.VITE_API_URI}/class?class_id=${classId}`
+        );
+        fetch(getURI)
+          .then((resp) => resp.json())
+          .then((data) => {
+            setNotes(
+              data.notes.map((note: { content: string }) => note.content)
+            );
+            setStudyPlan(data.study_plan);
+          });
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading
+      });
   }, [classId]);
 
   return (
@@ -89,7 +119,7 @@ export const ClassContent: React.FC<ClassContentProps> = ({
           Study Plan
         </button>
       </section>
-      { activeTab === "notes" ? (
+      {activeTab === "notes" ? (
         <section className="notes">
           <h1 className="title">{className} Notes</h1>
           <textarea
@@ -101,7 +131,7 @@ export const ClassContent: React.FC<ClassContentProps> = ({
             }}
           />
           <button
-            className="notes"
+            className="addNote"
             onClick={() => {
               sendAddNotesQuery(noteEntry);
               setNoteEntry("");
@@ -111,7 +141,12 @@ export const ClassContent: React.FC<ClassContentProps> = ({
             Add
           </button>
           {notes.map((note, i) => (
-            <p key={i}>{note}</p>
+            <section key={i} className="noteSection">
+              <p>{note}</p>
+              <button onClick={() => deleteNote(i)} className="delete">
+                X
+              </button>
+            </section>
           ))}
         </section>
       ) : (
@@ -122,8 +157,8 @@ export const ClassContent: React.FC<ClassContentProps> = ({
             </button>
             {loading && <div className="spinner"></div>} {/* Spinner */}
           </div>
-          {studyPlan.map((plan) => (
-            <section className="plan">
+          {studyPlan.map((plan, i) => (
+            <section className="plan" key={i}>
               <h1 className="planTitle">{`${plan.title} - for ${plan.time} minutes.`}</h1>
               <p className="agenda">{plan.agenda}</p>
             </section>

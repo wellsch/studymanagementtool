@@ -86,6 +86,8 @@ def integrate(existing, studyEvents, early, end):
     day = 0
     time = early
     for event in existing:
+        if event["start_date"] < 0:
+            continue
         
         # Fill up the FULL days we have to study with 
         while day < event["start_date"]:

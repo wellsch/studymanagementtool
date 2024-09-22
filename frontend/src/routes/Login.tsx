@@ -30,7 +30,14 @@ export default function Login() {
 
   return (
     <section className="login">
-      <h1>Study Buddy</h1>
+      <section style={{ display: "flex", alignItems: "center" }}>
+        <img
+          src="/public/ss_logo.png"
+          style={{ width: "60px", height: "auto" }}
+          alt="StudySync Logo"
+        />
+        <h1 style={{ marginLeft: "10px", lineHeight: "60px" }}>StudySync</h1>
+      </section>
       <div className="btn-container">
         <button className="btn btn-primary" onClick={handleClick}>
           <svg

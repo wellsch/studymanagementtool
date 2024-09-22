@@ -4,12 +4,15 @@
   background-color: #1976d2;
   height: 70px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
 }
 
-a {
+.link {
   font-family: "Arial", sans-serif;
   font-size: 1.2rem;
   color: #ffffff;
@@ -20,15 +23,30 @@ a {
   transition: all 0.3s ease; /* Smooth transition for hover/active states */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
   border: none; /* Remove any default borders */
+  margin-right: 5px;
 }
 
-a:hover {
+.link:hover {
   background-color: #1769aa; /* Darker shade on hover */
   color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* More pronounced shadow on hover */
 }
 
-a:active {
+.link:active {
   transform: scale(0.98); /* Slight shrink on click */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Return to default shadow on click */
+}
+
+img {
+  width: 60px;
+}
+
+.name {
+  color: white;
+  font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  text-decoration: none;
+  font-size: 2.5em;
 }
