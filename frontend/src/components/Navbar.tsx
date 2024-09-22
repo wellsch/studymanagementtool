@@ -5,7 +5,7 @@ export const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <Link to="/">
-        <img src="/public/ss_logo.png" />
+        <img src="/ss_logo.png" />
       </Link>
       <Link to="/" className="name">
         StudySync

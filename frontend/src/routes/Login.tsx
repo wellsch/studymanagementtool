@@ -32,7 +32,7 @@ export default function Login() {
     <section className="login">
       <section style={{ display: "flex", alignItems: "center" }}>
         <img
-          src="/public/ss_logo.png"
+          src="/ss_logo.png"
           style={{ width: "60px", height: "auto" }}
           alt="StudySync Logo"
         />

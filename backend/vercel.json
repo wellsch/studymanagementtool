@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "app.py"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "MONGODB_URI",
+    "CLIENT_ID": "CLIENT_ID",
+    "CLIENT_SECRET": "CLIENT_SECRET"
+  }
+}
