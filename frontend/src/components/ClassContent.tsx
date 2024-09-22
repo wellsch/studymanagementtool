@@ -45,7 +45,7 @@ export const ClassContent: React.FC<ClassContentProps> = ({
       })
         .then((resp) => resp.json())
         .then((data) => {
-          if (!data.error) setNotes((prev) => [...prev, notesContent]);
+          if (!data.error) setNotes((prev) => [notesContent, ...prev]);
         });
     },
     [classId]
