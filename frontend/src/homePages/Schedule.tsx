@@ -78,7 +78,7 @@ const Schedule: React.FC = () => {
   return (
     <section className="formSection">
       <h1 className="instructions">
-        Select your desired classes and Due-Dates
+        Select your desired classes and due dates
       </h1>
       {classes.length > 0 ? (
         <>
