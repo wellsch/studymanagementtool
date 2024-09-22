@@ -62,7 +62,7 @@ def addEvents(start, end, day, studyEvents):
     while start < end and nextEvent != -1:
         # add the event to the result
         event = studyEvents.pop(nextEvent)
-        result.append({"start_day": day, "start_time": start, "end_day": day, "end_time": round_up_to_nearest_quarter(start + event["time"] / 60 + .25), "study_event": event})
+        result.append({"start_day": day, "start_time": start, "end_day": day, "end_time": round_up_to_nearest_quarter(start + event["time"] / 60), "study_event": event})
         
         start += event["time"] / 60 + .25
         start = round_up_nearest_half(start)
