@@ -12,8 +12,11 @@ export const ClassContent: React.FC<ClassContentProps> = ({
 }) => {
   const [noteEntry, setNoteEntry] = useState("");
   const [notes, setNotes] = useState<string[]>([]);
-  const [studyPlan, setStudyPlan] = useState<string[]>([]);
+  const [studyPlan, setStudyPlan] = useState<
+    { title: string; agenda: string; time: number }[]
+  >([]);
   const [activeTab, setActiveTab] = useState("notes");
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
     const URI = encodeURI(
@@ -23,7 +26,7 @@ export const ClassContent: React.FC<ClassContentProps> = ({
       .then((resp) => resp.json())
       .then((data) => {
         setNotes(data.notes.map((note: { content: string }) => note.content));
-        console.log(data);
+        setStudyPlan(data.study_plan);
       });
   }, [classId]);
 
@@ -48,7 +51,27 @@ export const ClassContent: React.FC<ClassContentProps> = ({
     [classId]
   );
 
-  const generateStudyPlan = useCallback(() => {}, []);
+  const generateStudyPlan = useCallback(() => {
+    setLoading(true);
+    const URI = encodeURI(
+      `${import.meta.env.VITE_API_URI}/study?class_id=${classId}`
+    );
+    fetch(URI, {
+      method: "POST",
+    }).then(() => {
+      const getURI = encodeURI(
+        `${import.meta.env.VITE_API_URI}/class?class_id=${classId}`
+      );
+      fetch(getURI)
+        .then((resp) => resp.json())
+        .then((data) => {
+          setNotes(data.notes.map((note: { content: string }) => note.content));
+          setStudyPlan(data.study_plan);
+        });
+    }).finally(() => {
+      setLoading(false); // Stop loading
+    });
+  }, [classId]);
 
   return (
     <section className="content">
@@ -66,7 +89,7 @@ export const ClassContent: React.FC<ClassContentProps> = ({
           Study Plan
         </button>
       </section>
-      {activeTab === "notes" ? (
+      { activeTab === "notes" ? (
         <section className="notes">
           <h1 className="title">{className} Notes</h1>
           <textarea
@@ -93,9 +116,18 @@ export const ClassContent: React.FC<ClassContentProps> = ({
         </section>
       ) : (
         <section className="plans">
-          <button onClick={() => generateStudyPlan()}>
-            (Re)Generate Study Plan
-          </button>
+          <div className="generate-container">
+            <button className="generate" onClick={() => generateStudyPlan()}>
+              (Re)Generate Study Plan
+            </button>
+            {loading && <div className="spinner"></div>} {/* Spinner */}
+          </div>
+          {studyPlan.map((plan) => (
+            <section className="plan">
+              <h1 className="planTitle">{`${plan.title} - for ${plan.time} minutes.`}</h1>
+              <p className="agenda">{plan.agenda}</p>
+            </section>
+          ))}
         </section>
       )}
     </section>
