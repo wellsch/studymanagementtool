@@ -1,6 +1,5 @@
 import math
 from datetime import datetime, timedelta
-from datetime import datetime, timedelta
 
 def create_datetime_string(date_str, days_after, military_time):
     # Parse the input date string

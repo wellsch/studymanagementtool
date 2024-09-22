@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
-import datetime
+from datetime import datetime
 import google.auth
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
