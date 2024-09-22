@@ -97,7 +97,7 @@ def classes():
     if entry: return jsonify(entry['class_ids']), 200
     else: return jsonify({"error": "not found"}), 404
 
-@app.route('/notes', methods=['GET', 'POST'])
+@app.route('/notes', methods=['GET', 'POST', 'DELETE'])
 def notes():
     if request.method == 'POST':
         id = request.json.get("class_id")
@@ -110,13 +110,26 @@ def notes():
 
         if result.modified_count == 1: return jsonify({"status": "success"}), 200
         else: return jsonify({"error": "notes not inserted"}), 404
-
-    else:
+    elif request.method == 'GET':
         id = request.args.get('class_id')
         entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
 
         if entry: return jsonify(entry['notes']), 200
         else: return jsonify({"error": "not found"}), 404
+    else:
+        id = request.json.get("class_id")
+        index = request.json.get("index")
+
+        entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(id)})
+        entry['notes'].pop(index)
+
+        result = client['studymanagementtool']['classes'].update_one(
+            {'_id': ObjectId(id)},
+            {'$set': {'notes': entry['notes']}}
+        )
+
+        if result.modified_count == 1: return jsonify({"status": "success"}), 200
+        else: return jsonify({"error": "note not deleted"}), 404
 
 @app.route('/study', methods=['GET', 'POST'])
 def study():
