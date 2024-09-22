@@ -35,7 +35,7 @@
   box-sizing: border-box;
 }
 
-.notes button {
+.addNote {
   background-color: #4caf50;
   color: white;
   padding: 10px 15px;
@@ -49,12 +49,12 @@
   box-sizing: border-box;
 }
 
-.notes button:disabled {
+.addNote:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.notes button:hover:not(:disabled) {
+.addNote:hover:not(:disabled) {
   background-color: #45a049;
 }
 
@@ -108,19 +108,6 @@
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-/* .generate {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-} */
 
 .generate:hover {
   background-color: #45a049;
@@ -202,6 +189,34 @@
 
 /* Spinner animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.noteSection {
+  display: flex;
+  justify-content: space-between;
+}
+
+.delete {
+  width: fit-content;
+  margin-bottom: 10px;
+  background-color: transparent;
+  margin-left: 10px;
+  padding: 3px;
+  color: gray;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+button.delete:hover {
+  background-color: red;
 }

@@ -105,7 +105,7 @@ def notes():
 
         result = client['studymanagementtool']['classes'].update_one(
             {"_id": ObjectId(id)}, 
-            {"$push": {"notes": {"date": str(datetime.datetime.now()), "content": notes, "enabled": True}}}
+            {"$push": {"notes": {"date": str(datetime.now()), "content": notes, "enabled": True}}}
         )
 
         if result.modified_count == 1: return jsonify({"status": "success"}), 200
