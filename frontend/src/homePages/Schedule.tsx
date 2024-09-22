@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/UserContext";
+import "./schedule.css";
 
 const Schedule: React.FC = () => {
   const { id } = useContext(UserContext);
@@ -75,16 +76,20 @@ const Schedule: React.FC = () => {
   }, [endTime, selectedClasses, startDate, startTime]);
 
   return (
-    <section>
-      <section>
-        <h1>Select your desired classes and Due-Dates</h1>
-        {classes.length > 0 ? (
-          <>
-            {classes.map((classItem) => (
-              <>
-                <label htmlFor={classItem.name}>{classItem.name}</label>
+    <section className="formSection">
+      <h1 className="instructions">
+        Select your desired classes and Due-Dates
+      </h1>
+      {classes.length > 0 ? (
+        <>
+          {classes.map((classItem) => (
+            <section key={classItem.class_id}>
+              <section className="formRow">
+                <label className="classLabel" htmlFor={classItem.name}>
+                  {classItem.name}:
+                </label>
                 <input
-                  key={classItem.class_id}
+                  className="classCheckbox"
                   type="checkbox"
                   id={classItem.name}
                   onChange={(e) =>
@@ -95,50 +100,67 @@ const Schedule: React.FC = () => {
                     })
                   }
                 />
-                <br></br>
-                <label htmlFor={`priority_${classItem.class_id}`}>
+              </section>
+
+              <section className="formRow">
+                <label
+                  className="prioLabel"
+                  htmlFor={`priority_${classItem.class_id}`}
+                >
                   Priority:
                 </label>
                 <input
+                  className="prioRange"
                   type="range"
                   id={`prio_${classItem.class_id}`}
                   min={0}
                   defaultValue={2}
                   max={5}
                 />
-                <br></br>
-              </>
-            ))}
-            <label htmlFor="date">Start Date:</label>
-            <input
-              type="date"
-              id="date"
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <label htmlFor="start">Daily Start Time:</label>
-            <input
-              type="time"
-              id="start"
-              onChange={(e) => setStartTime(e.target.value)}
-            />
-            <label htmlFor="end">Daily End Time:</label>
-            <input
-              type="time"
-              id="end"
-              onChange={(e) => setEndTime(e.target.value)}
-            />
-            <input
-              type="submit"
-              value="Generate Study Sessions!"
-              onClick={() => {
-                requestSchedule();
-              }}
-            />
-          </>
-        ) : (
-          <h2>You have no classes with study plans at the moment!</h2>
-        )}
-      </section>
+              </section>
+            </section>
+          ))}
+          <label htmlFor="date" className="dateLabel">
+            Start Date:
+          </label>
+          <input
+            type="date"
+            id="date"
+            className="dateInput"
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+          <label htmlFor="start" className="timeLabel">
+            Daily Start Time:
+          </label>
+          <input
+            type="time"
+            id="start"
+            className="timeInput"
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+          <label htmlFor="end" className="timeLabel">
+            Daily End Time:
+          </label>
+          <input
+            type="time"
+            id="end"
+            className="timeInput"
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+          <input
+            type="submit"
+            className="submit"
+            value="Generate Study Sessions!"
+            onClick={() => {
+              requestSchedule();
+            }}
+          />
+        </>
+      ) : (
+        <h2 className="noClasses">
+          You have no classes with study plans at the moment!
+        </h2>
+      )}
     </section>
   );
 };
