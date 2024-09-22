@@ -3,7 +3,7 @@ import "./home.css";
 const Home = () => {
   return (
     <section className="home">
-      <h1>Welcome to Study Buddy!</h1>
+      <h1>Welcome to StudySync!</h1>
       <p>
         You can use this app as a central storage for notes from all your
         classes, and then generate study plans based off of those notes. Once
