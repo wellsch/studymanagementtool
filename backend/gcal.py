@@ -1,9 +1,50 @@
 import math
+from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 
-# Find the next availble study event they can do and still have 15 min rest
-# Return -1 is none is available
+def create_datetime_string(date_str, days_after, military_time):
+    # Parse the input date string
+    base_date = datetime.strptime(date_str, "%Y-%m-%d")
+    
+    # Add the number of days
+    target_date = base_date + timedelta(days=days_after)
+    
+    # Calculate hours and minutes from military time
+    hours = int(military_time)
+    minutes = int((military_time - hours) * 60)
+    
+    # Set the time for the target date
+    target_date = target_date.replace(hour=hours, minute=minutes)
+
+    # Format the date as an ISO 8601 string
+    iso_date_string = target_date.isoformat()
+
+    return iso_date_string
+
+def create_event(service, start, end, title, agenda):
+
+    timezone = service.calendars().get(calendarId='primary').execute().get('timeZone')
+
+    event = {
+        'summary': title, 
+        'description': agenda,
+        'start': {
+            'dateTime': start,
+            'timeZone': timezone,
+        },
+        'end': {
+            'dateTime': end, 
+            'timeZone': timezone,
+        }
+    }
+    
+    event_result = service.events().insert(calendarId='primary', body=event).execute()
+
 def round_up_nearest_half(x):
     return math.ceil(x * 2) / 2
+
+def round_up_to_nearest_quarter(num):
+    return math.ceil(num * 4) / 4
 
 def findAvailableEvent(timeAvailable, studyEvents):
     i = 0
@@ -21,7 +62,7 @@ def addEvents(start, end, day, studyEvents):
     while start < end and nextEvent != -1:
         # add the event to the result
         event = studyEvents.pop(nextEvent)
-        result.append({"start_day": day, "start_time": start, "study_event": event["title"]})
+        result.append({"start_day": day, "start_time": start, "end_day": day, "end_time": round_up_to_nearest_quarter(start + event["time"] / 60 + .25), "study_event": event})
         
         start += event["time"] / 60 + .25
         start = round_up_nearest_half(start)
@@ -29,12 +70,19 @@ def addEvents(start, end, day, studyEvents):
         nextEvent = findAvailableEvent(end - start, studyEvents)
     
     return result
+
+def addToGCal(events, start_date):
+    result = []
+    for event in events:
+        starting_date = create_datetime_string(start_date, event["start_day"], event["start_time"])
+        ending_date = create_datetime_string(start_date, event["end_day"], event["end_time"])
+        result.append({"start_date": starting_date, "end_date": ending_date, "title": event["study_event"]["title"], "agenda": event["study_event"]["agenda"]})
+    
+    return result
         
 def integrate(existing, studyEvents, early, end):
-    # existing event format: [{start: 1, end: 5, date: 2},... ]
-    # studyEvent: [{title: "fdsfa", time: .5, priority: 3}]
-    # NEED TO SORT EVENTS BY PRIORITY
-    
+    # sort the events by priority (highest to lowest priority)
+    studyEvents.sort(key=lambda x: x["priority"], reverse=True)
     result = []
     day = 0
     time = early
@@ -54,7 +102,7 @@ def integrate(existing, studyEvents, early, end):
         
         day = event["end_date"]
         time = round_up_nearest_half(event["end_time"] + 0.25)
-        
+    
     return result
 
 existing = [
@@ -92,41 +140,3 @@ existing = [
     }
 ]
 
-studyEvents =[
-	{
-		"agenda": "Study the concept of classes in Python by creating a simple class with attributes and methods. Implement a small project that utilizes both inheritance and encapsulation to reinforce your understanding.",
-		"time": 20,
-		"title": "Classes in Python"
-	},
-	{
-		"agenda": "Practice defining various types of functions in Python. Create a set of functions with parameters and return statements, including at least one lambda function for a simple operation. Test your functions with different inputs.",
-		"time": 15,
-		"title": "Functions in Python"
-	},
-	{
-		"agenda": "Review control flow constructs in Python by writing a program that utilizes conditional statements and loops. Include exception handling to deal with potential errors, and test your program with different scenarios.",
-		"time": 25,
-		"title": "Control Flow in Python"
-	}
-]
-
-print(integrate(existing, studyEvents, 9, 19))
-
-def create_event(service, start, end, title, agenda):
-
-    timezone = service.calendars().get(calendarId='primary').execute().get('timeZone')
-
-    event = {
-        'summary': title, 
-        'description': agenda,
-        'start': {
-            'dateTime': start,
-            'timeZone': timezone,
-        },
-        'end': {
-            'dateTime': end, 
-            'timeZone': timezone,
-        }
-    }
-    
-    event_result = service.events().insert(calendarId='primary', body=event).execute()
