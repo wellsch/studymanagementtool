@@ -1,4 +1,4 @@
-import pickle
+import gcal
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -21,6 +21,24 @@ MONGODB_URI = os.environ['MONGODB_URI']
 CLIENT_ID = os.environ['CLIENT_ID']
 CLIENT_SECRET = os.environ['CLIENT_SECRET']
 client = MongoClient(MONGODB_URI)
+
+# studyEvents =[
+# 	{
+# 		"agenda": "Study the concept of classes in Python by creating a simple class with attributes and methods. Implement a small project that utilizes both inheritance and encapsulation to reinforce your understanding.",
+# 		"time": 20,
+# 		"title": "Classes in Python"
+# 	},
+# 	{
+# 		"agenda": "Practice defining various types of functions in Python. Create a set of functions with parameters and return statements, including at least one lambda function for a simple operation. Test your functions with different inputs.",
+# 		"time": 15,
+# 		"title": "Functions in Python"
+# 	},
+# 	{
+# 		"agenda": "Review control flow constructs in Python by writing a program that utilizes conditional statements and loops. Include exception handling to deal with potential errors, and test your program with different scenarios.",
+# 		"time": 25,
+# 		"title": "Control Flow in Python"
+# 	}
+# ]
 
 @app.route('/')
 def home():
@@ -124,17 +142,39 @@ def study():
         if entry: return jsonify(entry['study_plan']), 200
         else: return jsonify({"error": "not found"}), 404
 
-
 @app.route('/calendar', methods=['POST'])
 def calendar():
     token_str = request.json.get("token")
     start_date = request.json.get("start_date")
+    classes = request.json.get("classes")
+    start_time = request.json.get("start_time")
+    end_time = request.json.get("end_time")
+    
+    
+    
+    # Build the service the accesses g cal
     creds = Credentials(token=token_str, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, token_uri="https://oauth2.googleapis.com/token",scopes=["https://www.googleapis.com/auth/calendar.readonly"])
     service = build('calendar', 'v3', credentials=creds)
-    events = get_upcoming_events(service, start_date)
-    return jsonify(events), 200
+    
+    studyEvents = []
+    # Build the list of study items
+    for classe in classes:
+        entry = client['studymanagementtool']['classes'].find_one({"_id": ObjectId(classe["class_id"])})
+        studyPlan = entry['study_plan']
+        
+        for plan in studyPlan:
+            plan["priority"] = classe["priority"]
+        
+        studyEvents.extend(studyPlan)
+    
+    events = get_upcoming_events(service, studyEvents, start_date, start_time, end_time)
+    gcalevents = gcal.addToGCal(events, start_date)
+    
+    # for event in gcalevents:
+    #     gcal.create_event(service, event["start_date"], event["end_date"], event["title"], event["agenda"])
+    return jsonify(gcalevents), 200
 
-def get_upcoming_events(service, start_date, max_results=10):
+def get_upcoming_events(service, studyEvents, start_date, start_time, end_time, max_results=200):
     # Call the Calendar API
     now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming {} events'.format(max_results))
@@ -176,9 +216,8 @@ def get_upcoming_events(service, start_date, max_results=10):
         }
         
         eventsInfo.append(eventInfo)
-        
-    print(eventsInfo)
-    return eventsInfo
+    
+    return gcal.integrate(eventsInfo, studyEvents, start_time, end_time)
 
 if __name__ == '__main__':
     app.run(debug=True)
