@@ -168,8 +168,8 @@ def calendar():
     events = get_upcoming_events(service, studyEvents, start_date, start_time, end_time)
     gcalevents = gcal.addToGCal(events, start_date)
     
-    # for event in gcalevents:
-    #     gcal.create_event(service, event["start_date"], event["end_date"], event["title"], event["agenda"])
+    for event in gcalevents:
+        gcal.create_event(service, event["start_date"], event["end_date"], event["title"], event["agenda"])
     return jsonify(gcalevents), 200
 
 def get_upcoming_events(service, studyEvents, start_date, start_time, end_time, max_results=200):

@@ -16,7 +16,6 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
       );
       const data = await response.json();
-      console.log(data);
       setUsername(data.name);
       setEmail(data.email);
       const URI = `${import.meta.env.VITE_API_URI}/login`;
@@ -30,7 +29,6 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
           "Content-type": "application/json; charset=UTF-8",
         },
       }).then((resp) => resp.json());
-      console.log(idData);
       setId(idData.user_id);
     },
     [setEmail, setId, setUsername]

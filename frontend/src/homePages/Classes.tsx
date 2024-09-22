@@ -5,12 +5,13 @@ import { ClassContent } from "../components/ClassContent";
 
 export const Classes: React.FC = () => {
   const { id } = useContext(UserContext);
-  const [classes, setClasses] = useState<{ name: string; class_id: string }[]>(
-    []
-  );
+
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
   const [className, setClassName] = useState("");
+  const [classes, setClasses] = useState<{ name: string; class_id: string }[]>(
+    []
+  );
 
   useEffect(() => {
     const URI = encodeURI(
@@ -19,7 +20,6 @@ export const Classes: React.FC = () => {
     fetch(URI)
       .then((resp) => resp.json())
       .then((data) => {
-        console.log(data);
         setClasses(data);
       });
   }, [id]);
