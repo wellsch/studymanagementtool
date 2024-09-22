@@ -150,6 +150,8 @@ def calendar():
     start_time = request.json.get("start_time")
     end_time = request.json.get("end_time")
     
+    
+    
     # Build the service the accesses g cal
     creds = Credentials(token=token_str, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, token_uri="https://oauth2.googleapis.com/token",scopes=["https://www.googleapis.com/auth/calendar.readonly"])
     service = build('calendar', 'v3', credentials=creds)
