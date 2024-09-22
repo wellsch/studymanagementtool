@@ -120,6 +120,7 @@ const Schedule: React.FC = () => {
               </section>
             </section>
           ))}
+
           <label htmlFor="date" className="dateLabel">
             Start Date:
           </label>
@@ -129,24 +130,26 @@ const Schedule: React.FC = () => {
             className="dateInput"
             onChange={(e) => setStartDate(e.target.value)}
           />
-          <label htmlFor="start" className="timeLabel">
-            Daily Start Time:
-          </label>
-          <input
-            type="time"
-            id="start"
-            className="timeInput"
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-          <label htmlFor="end" className="timeLabel">
-            Daily End Time:
-          </label>
-          <input
-            type="time"
-            id="end"
-            className="timeInput"
-            onChange={(e) => setEndTime(e.target.value)}
-          />
+          <section className="timeInfo">
+            <label htmlFor="start" className="timeLabel">
+              Daily Start Time:
+            </label>
+            <input
+              type="time"
+              id="start"
+              className="timeInput"
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+            <label htmlFor="end" className="timeLabel">
+              Daily End Time:
+            </label>
+            <input
+              type="time"
+              id="end"
+              className="timeInput"
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </section>
           <input
             type="submit"
             className="submit"
