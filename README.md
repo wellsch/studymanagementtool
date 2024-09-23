@@ -1,3 +1,4 @@
+https://devpost.com/software/study-buddy-os2hr1
 # Description
 ## Inspiration
 As busy college students, we often find ourselves in a cycle of taking notes during lectures, only to let them gather dust, never to be revisited. We've noticed a significant disconnect between writing notes down on paper and actually studying the subjects they cover. To address this inherent friction in the learning process, we decided to design a tool that not only understands and interprets textual notes for studying, but further enables concrete progress towards studying goals by integrating these study plans into one’s daily schedule.
